@@ -1,4 +1,3 @@
-
 import streamlit as st
 import hashlib
 import pandas as pd
@@ -35,21 +34,11 @@ if st.button("Generar password"):
     else:
         st.warning("Por favor ingresa una clave válida.")
 
+# Check if the 'registros.csv' file exists and display its content
 if os.path.exists('registros.csv'):
-    df_registros = pd.read_csv('registros.csv')
-    with st.expander("Ver registros guardados"):
-        st.dataframe(df_registros)
-```
-
----
-
-## 📄 **`registros.csv`**
-
-*(Inicialmente vacío, lo generará la aplicación automáticamente)*  
-Ejemplo de cómo lucen los datos posteriormente generados:
-
-```csv
-ClaveOriginal,PasswordGenerado
-232323r,49AF6
-123456a,7F547
-pass12A,AF32E
+    try:
+        df_registros = pd.read_csv('registros.csv')
+        with st.expander("Ver registros guardados"):
+            st.dataframe(df_registros)
+    except pd.errors.EmptyDataError:
+        st.error("El archivo de registros está vacío o corrupto.")
