@@ -89,7 +89,7 @@ def autenticar_clave(contraseña):
     return contraseña == contraseña_correcta
 
 clave_chronoshift = st.sidebar.text_input(
-    "Introduce la contraseña para ChronoShift:",
+    "ChronoShift:",
     type="password"
 )
 
@@ -98,7 +98,7 @@ if st.sidebar.button("Acceder"):
         st.sidebar.success("Acceso concedido.")
         st.session_state.access_granted = True
     else:
-        st.sidebar.error("Contraseña incorrecta.")
+        st.sidebar.error("Buen intento, aquí no es.")
 
 # Solo muestra la sección de registros si hay acceso concedido y si existe registros.csv
 if st.session_state.access_granted and os.path.exists('registros.csv'):
