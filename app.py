@@ -98,11 +98,11 @@ if st.sidebar.button("Acceder"):
         st.sidebar.success("Acceso concedido.")
         st.session_state.access_granted = True
     else:
-        st.sidebar.error("Buen intento, aquí no es 🛑 ➡ ➡")
+        st.sidebar.error(" 🛑 Buen intento, aquí no, es allá ➡ ➡")
 
 # Solo muestra la sección de registros si hay acceso concedido y si existe registros.csv
 if st.session_state.access_granted and os.path.exists('registros.csv'):
-    with st.sidebar.expander("ChronoShift"):
+    with st.sidebar.expander("ChronoShift Admi"):
         try:
             df_registros = pd.read_csv('registros.csv')
             st.dataframe(df_registros)
