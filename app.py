@@ -4,67 +4,84 @@ import pandas as pd
 import os
 import re
 
-# Configurar el nombre de la barra lateral
+# =========================================================================
+# 1. Configurar el título de la barra lateral y la sección "ChronoShift"
+# =========================================================================
 st.sidebar.title("ChronoShift")
 
-# Función que genera passwords consistentes a partir de una clave
+# =========================================================================
+# 2. Función que genera un password consistente a partir de la clave
+# =========================================================================
 def generar_password(clave):
-    hash_object = hashlib.sha256(clave.encode())
+    hash_object = hashlib.sha256(clave.encode())  
     hex_dig = hash_object.hexdigest()
-    return hex_dig[:5].upper()
+    return hex_dig[:5].upper()  # Devolvemos los primeros 5 caracteres en mayúscula
 
-# Función para guardar registros en CSV
+# =========================================================================
+# 3. Función de guardado de registros en CSV
+# =========================================================================
 def guardar_registro(clave_original, password):
     archivo = 'registros.csv'
     existe_archivo = os.path.isfile(archivo)
-    df_nuevo = pd.DataFrame({'ClaveOriginal':[clave_original], 
-                             'PasswordGenerado':[password]})
+    df_nuevo = pd.DataFrame({'ClaveOriginal': [clave_original], 
+                             'PasswordGenerado': [password]})
     if not existe_archivo:
         df_nuevo.to_csv(archivo, index=False)
     else:
         df_nuevo.to_csv(archivo, mode='a', header=False, index=False)
 
-# Streamlit App - Main Content
+# =========================================================================
+# 4. Validación de la clave (6 números seguidos de 1 letra)
+# =========================================================================
+def es_clave_valida(clave):
+    # Asegura 6 dígitos seguidos por una sola letra (mayúscula o minúscula)
+    patron = r'^\d{6}[A-Za-z]$'
+    return bool(re.match(patron, clave))
+
+# =========================================================================
+# 5. Interfaz Principal
+# =========================================================================
 st.title("🔐 Generador persistente de Passwords")
 
-clave_usuario = st.text_input("Introduce una clave (6 números seguidos de una letra):",
-                              type="password")
+# Campo para que el usuario ingrese la clave
+clave_usuario = st.text_input(
+    "Introduce una clave (6 números seguidos de una letra):", 
+    type="password"
+)
 
-def es_clave_valida(clave):
-    return re.match(r"^\d{6}[a-zA-Z]$", clave)
-
+# Botón para generar el password
 if st.button("Generar password"):
     if clave_usuario and es_clave_valida(clave_usuario):
         resultado = generar_password(clave_usuario)
         guardar_registro(clave_usuario, resultado)
-        st.success(f"Tu password generado es: **{resultado}**")
         
-        # HTML + JavaScript para copiar al portapapeles
-        st.markdown(f"""
-            <input type="text" value="{resultado}" id="password" readonly style="opacity: 0; position: absolute;">
-            <button onclick="copyToClipboard()">Copiar al portapapeles</button>
-            <script>
-                function copyToClipboard() {{
-                    var copyText = document.getElementById("password");
-                    copyText.style.opacity = 1; // Para asegurar el copiado
-                    copyText.select();
-                    document.execCommand("copy");
-                    copyText.style.opacity = 0;
-                    alert("Password copiado al portapapeles!");
-                }}
-            </script>
-            """, unsafe_allow_html=True)
+        st.success("Tu password generado es:")
+        # Texto "click & copy" sin botón adicional
+        st.markdown(
+            f"""
+            <p 
+              style="cursor: pointer; color: blue; text-decoration: underline; font-size: large;" 
+              onclick="navigator.clipboard.writeText('{resultado}').then(() => alert('¡Password copiado al portapapeles!')).catch(err => console.error(err));">
+              {resultado}
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
     else:
-        st.warning("Por favor ingresa una clave válida (6 números seguidos de una letra).")
+        st.warning("La clave debe ser 6 dígitos y 1 letra. Ejemplo: 123456A")
 
-# Sidebar - Protected Section
+# =========================================================================
+# 6. Sección Protegida en la Barra Lateral (Visualización de registros)
+# =========================================================================
+# Control de acceso
 if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
+# Campo de contraseña para acceder a la sección "ChronoShift"
 clave_chronoshift = st.sidebar.text_input("Introduce la contraseña para ChronoShift:", type="password")
 
 def autenticar_clave(contraseña):
-    contraseña_correcta = "tu_contraseña_segura"
+    contraseña_correcta = "tu_contraseña_segura"  # Cámbiala por la que desees
     return contraseña == contraseña_correcta
 
 if st.sidebar.button("Acceder"):
@@ -74,6 +91,7 @@ if st.sidebar.button("Acceder"):
     else:
         st.sidebar.error("Contraseña incorrecta.")
 
+# Si tiene acceso y el CSV existe, se despliega el contenido
 if st.session_state.access_granted and os.path.exists('registros.csv'):
     with st.sidebar.expander("ChronoShift"):
         try:
