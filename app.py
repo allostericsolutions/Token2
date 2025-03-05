@@ -108,3 +108,11 @@ if st.session_state.access_granted and os.path.exists('registros.csv'):
             st.dataframe(df_registros)
         except pd.errors.EmptyDataError:
             st.sidebar.error("El archivo de registros está vacío o corrupto.")
+
+ if st.button("Borrar registros"):
+            if os.path.exists('registros.csv'):
+                os.remove('registros.csv')
+                st.success("Se han borrado todos los registros.")
+                st.experimental_rerun()  # Recarga la aplicación para refrescar el estado
+            else:
+                st.warning("No existe ningún archivo de registros.")
