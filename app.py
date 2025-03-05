@@ -38,7 +38,13 @@ if st.button("Generar password"):
         resultado = generar_password(clave_usuario)
         guardar_registro(clave_usuario, resultado)
         st.success(f"Tu password generado es: **{resultado}**")
-        st.button("Copiar al portapapeles", on_click=lambda: st.clipboard(resultado))
+        
+        # Agregar un botón para copiar al portapapeles usando JavaScript
+        st.markdown(f"""
+            <button onclick="navigator.clipboard.writeText('{resultado}'); alert('Password copiado al portapapeles!')">
+                Copiar al portapapeles
+            </button>
+            """, unsafe_allow_html=True)
     else:
         st.warning("Por favor ingresa una clave válida (6 números seguidos de una letra).")
 
