@@ -85,7 +85,7 @@ if "access_granted" not in st.session_state:
 
 def autenticar_clave(contraseña):
     # Ajusta "tu_contraseña_segura" por la que prefieras
-    contraseña_correcta = "tu_contraseña_segura"
+    contraseña_correcta = "francisco14%"
     return contraseña == contraseña_correcta
 
 clave_chronoshift = st.sidebar.text_input(
