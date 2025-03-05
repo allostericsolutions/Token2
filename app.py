@@ -84,7 +84,7 @@ if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
 def autenticar_clave(contraseña):
-    # Ajusta "tu_contraseña_segura" por la que prefieras
+    # Ajusta "francisco14%" o la contraseña que prefieras
     contraseña_correcta = "francisco14%"
     return contraseña == contraseña_correcta
 
@@ -100,7 +100,7 @@ if st.sidebar.button("Acceder"):
     else:
         st.sidebar.error("🛑 Buen intento, aquí no, es allá ➡")
 
-# Solo muestra la sección de registros si hay acceso concedido y si existe registros.csv
+# Solo muestra la sección de registros si hay acceso concedido y si existe 'registros.csv'
 if st.session_state.access_granted and os.path.exists('registros.csv'):
     with st.sidebar.expander("ChronoShift Admi"):
         try:
@@ -109,10 +109,11 @@ if st.session_state.access_granted and os.path.exists('registros.csv'):
         except pd.errors.EmptyDataError:
             st.sidebar.error("El archivo de registros está vacío o corrupto.")
 
- if st.button("Borrar registros"):
+        # Aquí el bloque para borrar los registros con la indentación correcta
+        if st.button("Borrar registros"):
             if os.path.exists('registros.csv'):
                 os.remove('registros.csv')
                 st.success("Se han borrado todos los registros.")
-                st.experimental_rerun()  # Recarga la aplicación para refrescar el estado
+                st.experimental_rerun()  # Recarga la app para refrescar
             else:
                 st.warning("No existe ningún archivo de registros.")
