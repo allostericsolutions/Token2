@@ -4,23 +4,41 @@ import pandas as pd
 import os
 import re
 
-# ─────────────────────────────────────────────────────────────────────
-# 1. Configuración de la barra lateral y título principal
-# ─────────────────────────────────────────────────────────────────────
+# --------------------------------------------------------------------
+# Inyectamos CSS para ajustar el ancho de TODOS los st.code() en la app
+# --------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Ajusta el ancho de los bloques de código */
+    div[data-testid="stCodeBlock"] pre {
+        width: 10rem !important;       /* Ajusta a tu gusto (10rem ~ 160px) */
+        max-width: 10rem !important;   /* Evita que se expanda más que 10rem */
+        white-space: pre-wrap;         /* Permite el salto de línea si es muy largo */
+        word-wrap: break-word;         /* Ajusta la palabra a la línea */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# --------------------------------------------------------------------
+# Configurar el nombre de la barra lateral y el título principal
+# --------------------------------------------------------------------
 st.sidebar.title("ChronoShift")
 st.title("🔐 Generador persistente de Passwords")
 
-# ─────────────────────────────────────────────────────────────────────
-# 2. Función que genera un password consistente a partir de 6 dígitos + 1 letra
-# ─────────────────────────────────────────────────────────────────────
+# --------------------------------------------------------------------
+# Función que genera un password consistente a partir de 6 dígitos + 1 letra
+# --------------------------------------------------------------------
 def generar_password(clave):
     hash_object = hashlib.sha256(clave.encode())
     hex_dig = hash_object.hexdigest()
     return hex_dig[:5].upper()
 
-# ─────────────────────────────────────────────────────────────────────
-# 3. Función para guardar registros en un CSV
-# ─────────────────────────────────────────────────────────────────────
+# --------------------------------------------------------------------
+# Función para guardar registros en CSV
+# --------------------------------------------------------------------
 def guardar_registro(clave_original, password):
     archivo = 'registros.csv'
     existe_archivo = os.path.isfile(archivo)
@@ -33,44 +51,47 @@ def guardar_registro(clave_original, password):
     else:
         df_nuevo.to_csv(archivo, mode='a', header=False, index=False)
 
-# ─────────────────────────────────────────────────────────────────────
-# 4. Validación de la clave (6 números seguidos de 1 letra)
-# ─────────────────────────────────────────────────────────────────────
+# --------------------------------------------------------------------
+# Validación de la clave (6 números + 1 letra)
+# --------------------------------------------------------------------
 def es_clave_valida(clave):
     return bool(re.match(r'^\d{6}[A-Za-z]$', clave))
 
-# ─────────────────────────────────────────────────────────────────────
-# 5. Interfaz principal: ingreso de la clave y generación del password
-# ─────────────────────────────────────────────────────────────────────
-clave_usuario = st.text_input("Introduce una clave (6 números seguidos de una letra):",
-                              type="password")
+# --------------------------------------------------------------------
+# Interfaz principal para generar el password
+# --------------------------------------------------------------------
+clave_usuario = st.text_input(
+    "Introduce una clave (6 números seguidos de 1 letra):",
+    type="password"
+)
 
 if st.button("Generar password"):
     if clave_usuario and es_clave_valida(clave_usuario):
         # Generar y mostrar password
         resultado = generar_password(clave_usuario)
         guardar_registro(clave_usuario, resultado)
-        st.success("Tu password generado es:")
         
-        # Bloque de código que incluye el icono de copiado (Streamlit 1.28+)
+        st.success("Tu password generado es:")
+        # Usamos st.code para mostrar el texto con botón de copiado integrado
         st.code(resultado, language="bash")
-
     else:
-        st.warning("La clave debe ser 6 dígitos seguidos de 1 letra. Ej: 123456A")
+        st.warning("La clave debe ser 6 dígitos seguidos de 1 letra, ej: 123456A.")
 
-# ─────────────────────────────────────────────────────────────────────
-# 6. Sección protegida en la barra lateral para ver registros (ChronoShift)
-# ─────────────────────────────────────────────────────────────────────
+# --------------------------------------------------------------------
+# Sección protegida en la barra lateral para ver los registros
+# --------------------------------------------------------------------
 if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
-clave_chronoshift = st.sidebar.text_input("Introduce la contraseña para ChronoShift:",
-                                          type="password")
-
 def autenticar_clave(contraseña):
-    # Cambia "tu_contraseña_segura" por la contraseña que desees
+    # Ajusta "tu_contraseña_segura" por la que prefieras
     contraseña_correcta = "tu_contraseña_segura"
     return contraseña == contraseña_correcta
+
+clave_chronoshift = st.sidebar.text_input(
+    "Introduce la contraseña para ChronoShift:",
+    type="password"
+)
 
 if st.sidebar.button("Acceder"):
     if autenticar_clave(clave_chronoshift):
@@ -79,6 +100,7 @@ if st.sidebar.button("Acceder"):
     else:
         st.sidebar.error("Contraseña incorrecta.")
 
+# Solo muestra la sección de registros si hay acceso concedido y si existe registros.csv
 if st.session_state.access_granted and os.path.exists('registros.csv'):
     with st.sidebar.expander("ChronoShift"):
         try:
