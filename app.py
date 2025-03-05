@@ -5,24 +5,24 @@ import os
 import re
 
 # --------------------------------------------------------------------
-# Inyectamos CSS para ajustar el ancho de st.code() y
-# colocar una imagen de fondo en la barra lateral
+# Inyectamos CSS para ajustar el ancho de st.code() 
+# y colocar una imagen de fondo en la barra lateral
 # --------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Barra lateral con imagen de fondo */
+    /* Barra lateral con imagen de fondo un 20% más pequeña que antes (64% auto en lugar de 80% auto) */
     [data-testid="stSidebar"] {
         background-image: url("https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png");
         background-repeat: no-repeat;
         background-position: center;
-        background-size: 80% auto;
+        background-size: 64% auto;
     }
 
     /* Ajusta el ancho de los bloques de código */
     div[data-testid="stCodeBlock"] pre {
         width: 10rem !important;       /* Ajusta a tu gusto (~160px) */
-        max-width: 10rem !important;   /* Evita que se expanda más */
+        max-width: 10rem !important;   
         white-space: pre-wrap;         
         word-wrap: break-word;         
     }
@@ -81,13 +81,10 @@ if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
 def autenticar_clave(contraseña):
-    contraseña_correcta = "francisco14%"  # Cámbiala por la que desees
+    contraseña_correcta = "francisco14%"  # Ajusta por la que desees
     return contraseña == contraseña_correcta
 
-clave_chronoshift = st.sidebar.text_input(
-    "ChronoShift:",
-    type="password"
-)
+clave_chronoshift = st.sidebar.text_input("ChronoShift:", type="password")
 
 if st.sidebar.button("Acceder"):
     if autenticar_clave(clave_chronoshift):
