@@ -39,11 +39,20 @@ if st.button("Generar password"):
         guardar_registro(clave_usuario, resultado)
         st.success(f"Tu password generado es: **{resultado}**")
         
-        # Agregar un botón para copiar al portapapeles usando JavaScript
+        # HTML + JavaScript para copiar al portapapeles
         st.markdown(f"""
-            <button onclick="navigator.clipboard.writeText('{resultado}'); alert('Password copiado al portapapeles!')">
-                Copiar al portapapeles
-            </button>
+            <input type="text" value="{resultado}" id="password" readonly style="opacity: 0; position: absolute;">
+            <button onclick="copyToClipboard()">Copiar al portapapeles</button>
+            <script>
+                function copyToClipboard() {{
+                    var copyText = document.getElementById("password");
+                    copyText.style.opacity = 1; // Para asegurar el copiado
+                    copyText.select();
+                    document.execCommand("copy");
+                    copyText.style.opacity = 0;
+                    alert("Password copiado al portapapeles!");
+                }}
+            </script>
             """, unsafe_allow_html=True)
     else:
         st.warning("Por favor ingresa una clave válida (6 números seguidos de una letra).")
