@@ -35,7 +35,7 @@ st.markdown(
 # Ajustes de la app
 # --------------------------------------------------------------------
 st.sidebar.title("ChronoShift")
-st.title("🔐 Token SALUDCHECK360")
+st.title("🔐 Token SALUDCHECK 360")
 
 def generar_password(clave):
     hash_object = hashlib.sha256(clave.encode())
